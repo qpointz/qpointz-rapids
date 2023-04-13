@@ -73,6 +73,9 @@ dependencyResolutionManagement {
             library("avro", "org.apache.avro", "avro").versionRef(apacheAvro)
             library("avro-mapred", "org.apache.avro", "avro-mapred").versionRef(apacheAvro)
 
+            val graphQl = version("graphql", "20.2")
+            library("graphql-java", "com.graphql-java", "graphql-java").versionRef(graphQl)
+
             bundle("quarkus-base-impl", listOf("quarkus-arc", "quarkus-config-yaml"))
             bundle("quarkus-base-test", listOf("quarkus-junit5"))
         }

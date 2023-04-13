@@ -13,6 +13,8 @@ dependencies {
     implementation(libs.bundles.quarkus.base.impl)
     testImplementation(libs.bundles.quarkus.base.test)
 
+    implementation(libs.graphql.java)
+
     implementation(libs.lombok)
     annotationProcessor(libs.lombok)
 }

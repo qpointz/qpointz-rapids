@@ -22,9 +22,13 @@ public class StandardCalciteHanlder implements SchemaPlusCalciteHandler  {
     @Getter(lazy = true)
     private final CalciteConnection calciteConnection = createCalciteConnection();
 
-    private CalciteConnection createCalciteConnection() throws SQLException {
-        var connection = DriverManager.getConnection(jdbcUrl, this.properties);
-        return connection.unwrap(CalciteConnection.class);
+    private CalciteConnection createCalciteConnection() {
+        try {
+            var connection = DriverManager.getConnection(jdbcUrl, this.properties);
+            return connection.unwrap(CalciteConnection.class);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -46,11 +50,11 @@ public class StandardCalciteHanlder implements SchemaPlusCalciteHandler  {
 
     @Override
     public SchemaPlus getRootSchema() {
-        return this.calciteConnection.getRootSchema();
+        return this.getCalciteConnection().getRootSchema();
     }
 
     @Override
     public RelDataTypeFactory getTypeFactory() {
-        return this.calciteConnection.getTypeFactory();
+        return this.getCalciteConnection().getTypeFactory();
     }
 }

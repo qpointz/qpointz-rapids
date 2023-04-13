@@ -29,6 +29,8 @@ dependencies {
     implementation(libs.quarkus.vertx)
     implementation(libs.quarkus.resteasy.reactive)
 
+    implementation(libs.graphql.java)
+
 }
 
 java {

@@ -18,7 +18,7 @@ public class JdbcService extends AbstractBackgroundService {
 
     private final JdbcServiceConfig jdbcServerConfig;
     private final CalciteHandler calciteHandler;
-    //private final CalciteService calcite;
+
 
     public JdbcService(Vertx vertx, JdbcServiceConfig config, CalciteHandler calciteHandler) {
         super(vertx, config);

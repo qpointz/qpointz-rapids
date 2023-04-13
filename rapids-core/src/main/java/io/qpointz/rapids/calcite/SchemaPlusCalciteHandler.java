@@ -1,5 +1,6 @@
 package io.qpointz.rapids.calcite;
 
+import io.qpointz.rapids.graphql.GraphQLHandler;
 import io.qpointz.rapids.schema.Attribute;
 import io.qpointz.rapids.schema.Catalog;
 import io.qpointz.rapids.schema.DataSet;
@@ -12,11 +13,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public interface SchemaPlusCalciteHandler extends CalciteHandler {
-
-    SchemaPlus getRootSchema();
+public interface SchemaPlusCalciteHandler extends CalciteHandler, GraphQLHandler {
 
     RelDataTypeFactory getTypeFactory();
+
     @Override
     default Catalog getCatalog() {
         var schema = this.getRootSchema();

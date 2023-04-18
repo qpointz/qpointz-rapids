@@ -7,7 +7,6 @@ import org.apache.calcite.avatica.jdbc.JdbcMeta;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.schema.SchemaPlus;
-
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -23,6 +22,7 @@ public class StandardCalciteHanlder implements SchemaPlusCalciteHandler  {
     private final CalciteConnection calciteConnection = createCalciteConnection();
 
     private CalciteConnection createCalciteConnection() {
+        //ugly hack :)
         try {
             var connection = DriverManager.getConnection(jdbcUrl, this.properties);
             return connection.unwrap(CalciteConnection.class);
@@ -35,6 +35,7 @@ public class StandardCalciteHanlder implements SchemaPlusCalciteHandler  {
     public StandardCalciteHanlder(Properties defaultProperties) throws ClassNotFoundException, SQLException {
         log.debug("Resolve calcite JDBC classes");
         Class.forName("org.apache.calcite.jdbc.Driver");
+        Class.forName("io.qpointz.rapids.formats.parquet.RapidsParquetSchemaFactory");
         this.properties = new Properties();
         this.properties.putAll(defaultProperties);
     }

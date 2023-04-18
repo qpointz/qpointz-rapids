@@ -4,7 +4,8 @@ qpointz:
       mode: standard
       standard:
         properties:
-          - "model=/home/vm/wip/rapids/rapids-server/etc/example/model.json"
+          - "model=etc/example/model.json"
+          - "quoting=BACK_TICK"
     services:
       jdbc:
         enabled: true

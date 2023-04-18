@@ -13,17 +13,27 @@ dependencies {
     implementation(libs.bundles.quarkus.base.impl)
     testImplementation(libs.bundles.quarkus.base.test)
 
-    implementation(libs.graphql.java)
+    //implementation(libs.graphql.java)
+
+    implementation(libs.parquet.avro)
+    //implementation(libs.parquet.common)
+    //implementation(libs.parquet.column)
+    //implementation(libs.parquet.hadoop)
+    implementation(libs.avro)
+    implementation(libs.avro.mapred)
+    implementation(libs.hadoop.common)
+    implementation(libs.hadoop.client)
 
     implementation(libs.lombok)
     annotationProcessor(libs.lombok)
 }
 
-tasks {
-
-    register("copyToLib", Copy::class) {
-        from(configurations.runtimeClasspath)
-        into("$buildDir/output/libs")
+testing {
+    suites {
+        // Configure the built-in test suite
+        val test by getting(JvmTestSuite::class) {
+            // Use JUnit Jupiter test framework
+            useJUnitJupiter("5.9.2")
+        }
     }
-
 }

@@ -1,12 +1,13 @@
 package io.qpointz.rapids.formats.parquet;
 
+import com.azure.storage.common.StorageSharedKeyCredential;
+import com.azure.storage.file.datalake.DataLakeServiceClientBuilder;
+import io.qpointz.rapids.azure.AzureDataLakeSeekableInputStream;
 import org.apache.parquet.io.SeekableInputStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,16 +16,22 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class AzureSeekableFileInputStreamTest {
 
-    private static Path refFilePath = Paths.get(".tmp/hallo.bin").toAbsolutePath();
+    private static String refFileName = "hallo.bin";
+    private static Path refFilePath = Paths.get(".tmp", refFileName).toAbsolutePath();
+
+    private static String storageAccountName = System.getenv("RAPIDS_IT_AZURE_STORAGE_ACCOUNT_NAME");
+    private static String storageAccountKey = System.getenv("RAPIDS_IT_AZURE_STORAGE_ACCOUNT_KEY");
+
+    private static String fileSystem = "rapids-it";
 
     @BeforeAll
     public static void prepareInputFile() throws IOException {
+        // prepare local file
         var dirPath = Paths.get(".tmp").toAbsolutePath();
         if (!Files.exists(dirPath)) {
             Files.createDirectory(dirPath);
@@ -37,20 +44,52 @@ class AzureSeekableFileInputStreamTest {
         var fos = new FileOutputStream(filePath.toFile(), false);
         var r = new Random(Instant.now().toEpochMilli());
         var bytes = new byte[1024];
-        for (var i=0;i<100000;i++) {
+        for (var i=0;i<20000;i++) {
             r.nextBytes(bytes);
             fos.write(bytes);
             fos.flush();
         }
         fos.close();
-    }
+
+        //ingest
+        var credentials = new StorageSharedKeyCredential(storageAccountName, storageAccountKey);
+        var endpoint = "https://%s.dfs.core.windows.net".formatted(storageAccountName);
+        var dlsClient = new DataLakeServiceClientBuilder()
+                .endpoint(endpoint)
+                .credential(credentials)
+                .buildClient();
+        var fsclient = dlsClient.getFileSystemClient(fileSystem);
+        if (!fsclient.exists()) {
+            fsclient.create();
+        }
+        var dirclient = fsclient.getDirectoryClient("rapids/azure/stream");
+        if (dirclient.exists()) {
+            dirclient.deleteWithResponse(true, null, null, null);
+        }
+        dirclient.create();
+        System.out.println("Directory created");
+        var fileClient = dirclient.createFile(refFileName);
+        File file = refFilePath.toFile();
+        long fileLength = file.length();
+        try (var refFileStream = new BufferedInputStream(new FileInputStream(file))) {
+            fileClient.append(refFileStream, 0, fileLength);
+            fileClient.flush(fileLength,true);
+        }
+        System.out.println("hallo");
+  }
 
     SeekableInputStream stream1() throws FileNotFoundException {
         return new RapidsSeekableFileInputStream(new FileInputStream(refFilePath.toFile()));
     }
 
     SeekableInputStream stream2() throws FileNotFoundException {
-        return new RapidsSeekableFileInputStream(new FileInputStream(refFilePath.toFile()));
+        return AzureDataLakeSeekableInputStream.create(
+                storageAccountName,
+                storageAccountKey,
+                fileSystem,
+                "/rapids/azure/stream",
+                "hallo.bin"
+        );
     }
 
     @Test
@@ -70,7 +109,7 @@ class AzureSeekableFileInputStreamTest {
         var bf1 = fn.apply(s1);
         var s2 = stream2();
         var bf2 = fn.apply(s2);
-        assertTrue(Arrays.equals(bf1,bf2));
+        assertArrayEquals(bf1, bf2);
         assertEquals(s1.getPos(), s2.getPos());
     }
 
@@ -94,7 +133,7 @@ class AzureSeekableFileInputStreamTest {
         var bf1 = fn.apply(s1);
         var s2 = stream2();
         var bf2 = fn.apply(s2);
-        assertTrue(Arrays.equals(bf1,bf2));
+        assertArrayEquals(bf1, bf2);
         assertEquals(s1.getPos(), s2.getPos());
     }
 
@@ -112,6 +151,6 @@ class AzureSeekableFileInputStreamTest {
         };
         var bf1 = fn.apply(stream1());
         var bf2 = fn.apply(stream2());
-        assertTrue(Arrays.equals(bf1,bf2));
+        assertArrayEquals(bf1, bf2);
     }
 }

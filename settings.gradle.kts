@@ -13,7 +13,8 @@ rootProject.name = "rapids"
 include (":rapids-core")
 include (":rapids-jdbc-driver")
 include (":rapids-jdbc-driver")
-include (":rapids-server")
+//include (":rapids-server")
+include (":rapids-srv-worker")
 
 include (":etc:msynth")
 project(":etc:msynth").projectDir = file("etc/msynth")
@@ -38,7 +39,7 @@ dependencyResolutionManagement {
             library("calcite-csv", "org.apache.calcite", "calcite-csv").versionRef("calcite")
 
 
-            version("avatica", "1.23.0")
+            version("avatica", "1.22.0")
             library("avatica-core", "org.apache.calcite.avatica", "avatica-core").versionRef("avatica")
             library("avatica-server", "org.apache.calcite.avatica", "avatica-server").versionRef("avatica")
 
@@ -92,7 +93,8 @@ dependencyResolutionManagement {
             library("junit-jupiter-engine", "org.junit.jupiter", "junit-jupiter-engine").versionRef(junit)
             library("junit-vintage-engine", "org.junit.vintage", "junit-vintage-engine").versionRef(junit)
 
-            library("azure-storage-file-datalake", "com.azure", "azure-storage-file-datalake").version("12.14.1")
+            library("azure-storage-file-datalake", "com.azure", "azure-storage-file-datalake").version("12.15.0")
+            library("azure-storage-blob-nio", "com.azure", "azure-storage-blob-nio").version("12.0.0-beta.19")
 
             bundle("quarkus-base-impl", listOf("quarkus-arc", "quarkus-config-yaml"))
             bundle("quarkus-base-test", listOf("quarkus-junit5"))

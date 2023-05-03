@@ -116,6 +116,37 @@ dependencyResolutionManagement {
             val postgre = version("postgre", "42.6.0")
             library("postgresql", "org.postgresql","postgresql").versionRef(postgre)
 
+            val sdl = version("sdl","2.10.23")
+            library("sdl-odata-service","com.sdl", "odata_service").versionRef(sdl)
+            library("sdl-odata-common","com.sdl", "odata_common").versionRef(sdl)
+            library("sdl-odata-api","com.sdl", "odata_api").versionRef(sdl) //- Framework APIs
+            library("sdl-odata-processor","com.sdl", "odata_parser").versionRef(sdl) //- OData URI parser
+            library("sdl-odata-renderer","com.sdl", "odata_renderer").versionRef(sdl) //- Renderers for Atom and JSON output
+            library("sdl-odata-edm","com.sdl", "odata_edm").versionRef(sdl) //- The OData EDM metadata (Entity Data Model)
+            //odata_assembly - Assembly structure for standalone distribution
+            //odata_checkstyle - Checkstyle configuration
+            //odata_client - OData Java Client library
+            //odata_common - Common packages and utilities
+            //odata_controller - Spring Boot REST controller
+            //odata_parser
+            //odata_processor - Handlers for processing requests
+            //odata_service - The core OData service and Akka based processing engine
+            //odata_test - Test components
+            //odata_war - OData WAR distribution artifact
+            //odata_webservice - Spring Boot based OData HTTP webservice container
+
+            val olingo = version("olingo", "4.9.0")
+            library("olingo-odata-server-core", "org.apache.olingo", "odata-server-core").versionRef(olingo)
+            library("olingo-odata-server-api", "org.apache.olingo", "odata-server-api").versionRef(olingo)
+            library("olingo-odata-commons-api", "org.apache.olingo", "odata-commons-api").versionRef(olingo)
+            library("olingo-odata-commons-core", "org.apache.olingo", "odata-commons-core").versionRef(olingo)
+
+
+            val jetty = version("jetty","9.4.44.v20210927")
+            //library("jetty-http", "org.eclipse.jetty","jetty-http").versionRef(jetty)
+            library("jetty-server", "org.eclipse.jetty","jetty-server").versionRef(jetty)
+            library("jetty-servlet", "org.eclipse.jetty","jetty-servlet").versionRef(jetty)
+
 
             //bundle("quarkus-base-impl", listOf("quarkus-arc", "quarkus-config-yaml"))
             //bundle("quarkus-base-test", listOf("quarkus-junit5"))
